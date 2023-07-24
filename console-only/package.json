@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "prompt-sync": "^4.2.0"
+  },
+  "scripts": {
+    "forget": "node -r dotenv/config methods/forgetPlayer.js",
+    "register": "node -r dotenv/config methods/registerPlayer.js"
+  }
+}

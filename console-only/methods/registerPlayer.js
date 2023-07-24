@@ -13,25 +13,15 @@ const registerPlayer = async () => {
   })
     .then((response) => {
       console.log(response.status);
-      return response.json();
-    })
-    .then((data) => console.log(data))
-    .catch((error) => console.error(error));
-};
-
-const forgetPlayer = async () => {
-  await fetch(`${API}/api/player/forget`, {
-    method: "DELETE",
-    headers: { "Authorization": process.env.API_KEY },
-  })
-    .then((response) => {
-      console.log(response.status);
-      return response;
+      if (response.status === 202) {
+        return response;
+      } else {
+        return response.json();
+      }
     })
     .then((data) => console.log(data))
     .catch((error) => console.error(error));
 };
 
 //EXECUTION
-// registerPlayer();
-forgetPlayer();
+registerPlayer();
