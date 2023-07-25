@@ -5,6 +5,8 @@
   },
   "scripts": {
     "forget": "node -r dotenv/config methods/forgetPlayer.js",
-    "register": "node -r dotenv/config methods/registerPlayer.js"
+    "register": "node -r dotenv/config methods/registerPlayer.js",
+    "player-info": "node -r dotenv/config methods/getPlayerInfo.js",
+    "start": "node -r dotenv/config methods/forgetPlayer.js && node -r dotenv/config methods/registerPlayer.js && node main.js"
   }
 }

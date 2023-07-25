@@ -1,18 +1,18 @@
 // VARIABLES
 
-//FUNCTION
-const forgetPlayer = async () => {
-  await fetch(`${process.env.API}/api/player/forget`, {
-    method: "DELETE",
+//FUNCTIONS
+const playerInfo = async () => {
+  await fetch(`${process.env.API}/api/player`, {
+    method: "GET",
     headers: { "Authorization": process.env.API_KEY },
   })
     .then((response) => {
       console.log(response.status);
-      return response;
+      return response.json();
     })
     .then((data) => console.log(data))
     .catch((error) => console.error(error));
 };
 
 //EXECUTION
-forgetPlayer();
+playerInfo();
