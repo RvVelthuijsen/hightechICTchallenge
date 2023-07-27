@@ -69,12 +69,12 @@ const fetchLocation = async () => {
 };
 
 // Function to enter Maze, Example maze pre-selected
-const enterMaze = async () => {
-  //   currentMaze = allMazes.find((maze) => (maze.name = "Example Maze"));
-  currentMaze = allMazes[6];
-  totalScore = allMazes[6].potentialReward;
+const enterMaze = async (mazeName) => {
+  currentMaze = allMazes.find((maze) => (maze.name = mazeName));
+  // currentMaze = allMazes[6];
+  totalScore = currentMaze.potentialReward;
 
-  await fetch(`${process.env.API}/api/mazes/enter?mazeName=Example Maze`, {
+  await fetch(`${process.env.API}/api/mazes/enter?mazeName=${mazeName}`, {
     method: "POST",
     headers: {
       "Authorization": process.env.API_KEY,
@@ -169,7 +169,7 @@ const tagTile = async (tag) => {
 const chooseMove = async () => {
   // if there's only one move, go here
   if (location.possibleMoveActions.length === 1) {
-    console.log("only one move possible");
+    console.log("There is only one move possible");
     move = location.possibleMoveActions[0].direction;
     return;
   }
@@ -189,7 +189,7 @@ const chooseMove = async () => {
 
   // if after this there's only one move, go here
   if (moveOptions.length === 1) {
-    console.log("only one move possible");
+    console.log("There is only one move possible");
     move = moveOptions[0].direction;
     return;
   }
@@ -246,7 +246,7 @@ const chooseMove = async () => {
       );
     }
     console.log(
-      "all else failed, going with random option we haven't been before"
+      "All checks failed, going with random option we haven't been before"
     );
     let randomOption = Math.floor(Math.random() * moveOptions.length);
     console.log(`Random option selected: ${randomOption}`);
@@ -291,38 +291,44 @@ const timer = (delay) => {
   return new Promise((stop) => setTimeout(stop, delay));
 };
 const wait = async () => {
-  console.log("Catching breath");
+  console.log("Catching breath...");
   await timer(3000);
 };
 
 // This is the main gameloop which takes care of the full inital maze setup and loop
 const gameLoop = async () => {
-  console.log("start");
+  console.log("Start");
   await fetchAllMazes();
-  await enterMaze();
-  console.log(currentMaze);
 
-  if (!location.possibleMoveActions) {
-    await fetchLocation();
-  }
-  console.log(`In maze is ${inMaze}`);
-
-  let i = 1;
-  do {
-    console.log(`Loop ${i}`);
-    if (location.canCollectScoreHere && currentScoreInHand != 0) {
-      await collectScore();
-    } else if (location.canExitMazeHere && currentScoreInBag === totalScore) {
-      await exitMaze();
-      console.log("Maze was completed!");
-      break;
+  // Looping over all mazes in attempt to clear all
+  for (const maze of allMazes) {
+    await enterMaze(maze.name);
+    console.log(currentMaze);
+    if (!location.possibleMoveActions) {
+      await fetchLocation();
     }
-    await wait();
-    console.log(location.possibleMoveActions);
-    await movement();
-    i++;
-  } while (i < 80);
-  // while doesn't do much if using inMaze (break before it's set to false), breaking
+    console.log(`In maze is ${inMaze}`);
+    let i = 1;
+    do {
+      console.log(`Loop ${i}`);
+      if (location.canCollectScoreHere && currentScoreInHand != 0) {
+        await collectScore();
+      } else if (location.canExitMazeHere && currentScoreInBag === totalScore) {
+        await exitMaze();
+        console.log("Maze was completed!");
+        break;
+      }
+      await wait();
+      console.log("MoveOptions are:");
+      console.log(location.possibleMoveActions);
+      console.log(
+        `Current status: ${currentScoreInHand} in hand and ${currentScoreInBag} in bag`
+      );
+      await movement();
+      i++;
+    } while (inMaze);
+    // while doesn't do much if using inMaze (break before it's set to false), breaking
+  }
 };
 
 // EXECUTION
