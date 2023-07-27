@@ -159,7 +159,7 @@ const tagTile = async (tag) => {
 // };
 
 const chooseMove = async () => {
-  // if only one move, go here
+  // if there's only one move, go here
   if (location.possibleMoveActions.length === 1) {
     console.log("only one move possible");
     move = location.possibleMoveActions[0].direction;
@@ -167,27 +167,16 @@ const chooseMove = async () => {
   }
   // Creating copy to work with
   let moveOptions = Array.from(location.possibleMoveActions);
+  let taggedTile;
+  let moveSelected = false;
 
-  // removing option which goes back
-
+  // If there's more than one move, I'm removing the option which goes back to where we just came from
   let moveWhichGoesBack = moveOptions.find(
     (option) => option.direction === directionPairs[move].counter
   );
   if (moveWhichGoesBack != undefined) {
-    moveOptions = location.possibleMoveActions.filter(
-      (option) => option != moveWhichGoesBack
-    );
+    moveOptions = moveOptions.filter((option) => option != moveWhichGoesBack);
   }
-
-  //
-  if (location.tagOnCurrentTile != null) {
-    console.log("tag detected, removing option we last went to");
-    moveOptions = moveOptions.filter(
-      (option) =>
-        location.tagOnCurrentTile != directionPairs[option.direction].tag
-    );
-  }
-  console.log(moveOptions);
 
   // if after this there's only one move, go here
   if (moveOptions.length === 1) {
@@ -196,32 +185,44 @@ const chooseMove = async () => {
     return;
   }
 
+  // Checking if there's a tag on current tile which corresponds to the direction we went to last time we visited.
+  if (location.tagOnCurrentTile != null) {
+    console.log("tag detected");
+    taggedTile = moveOptions.find(
+      (option) =>
+        location.tagOnCurrentTile === directionPairs[option.direction].tag
+    );
+  }
+
   // iterate over options to find best match
   for (const i of moveOptions) {
-    // console.log(location.possibleMoveActions[i]);
     console.log(`Reward is ${i.rewardOnDestination}`);
     if (i.rewardOnDestination > 0) {
       console.log("we need to go this way");
       move = i.direction;
+      moveSelected = true;
       break;
     } else if (i.canCollectScoreHere && currentScoreInHand > 0) {
       console.log("we need to collect score here");
       move = i.direction;
+      moveSelected = true;
       break;
     } else if (i.canExitMazeHere && currentScoreInBag === totalScore) {
       console.log("we need to exit maze here");
       move = i.direction;
+      moveSelected = true;
       break;
     } else if (i.hasBeenVisited === false) {
       console.log(
         "this is the first tile that has not been visited before, let's go"
       );
       move = i.direction;
+      moveSelected = true;
       break;
+    } else if (taggedTile && i.direction === taggedTile.direction) {
+      console.log("we went here before, skipping");
+      continue;
     }
-    // else if (moveOptions.length >= 2){
-
-    // }
 
     // else if (move != i.direction) {
     //   console.log(`last move was ${move}`);
@@ -232,18 +233,32 @@ const chooseMove = async () => {
     //   move = i.direction;
     //   break;
     // }
-    else {
-      // if none of the above, go here
-      console.log("all else failed, going with first option");
-      move = i.direction;
-      console.log(
-        `Going ${move}. Tagging tile for future reference. Next time we come here we should not go here again`
-      );
-      await tagTile(directionPairs[move].tag);
-      break;
-    }
+
     // make into case
   }
+
+  // if none of the tiles are favourable, meaning none have score, we cannot collect or exit and we've visited them all before, we choose a random option
+  if (!moveSelected) {
+    // remove option we went to last if taggedTile
+    if (taggedTile) {
+      moveOptions = moveOptions.filter(
+        (option) =>
+          location.tagOnCurrentTile != directionPairs[option.direction].tag
+      );
+    }
+
+    console.log(
+      "all else failed, going with random option we haven't been before"
+    );
+    let randomOption = Math.floor(Math.random() * moveOptions.length);
+    console.log(`Random option selected: ${randomOption}`);
+    move = moveOptions[randomOption].direction;
+  }
+
+  console.log(
+    `Going ${move}. Tagging tile for future reference. Next time we come here we should not go here again`
+  );
+  await tagTile(directionPairs[move].tag);
 
   // not a catch all... add another break case
 };
@@ -308,7 +323,7 @@ const gameLoop = async () => {
     console.log(`Loop ${i}`);
     if (location.canCollectScoreHere && currentScoreInHand != 0) {
       collectScore();
-    } else if (location.canExitMazeHere && currentScoreInBag === 94) {
+    } else if (location.canExitMazeHere && currentScoreInBag === totalScore) {
       exitTestmaze();
       console.log("Maze was completed");
       break;
