@@ -1,18 +1,18 @@
 // IMPORTS
-const prompt = require("prompt-sync")({ sigint: true });
+// const prompt = require("prompt-sync")({ sigint: true });
 
 // VARIABLES
-const playerName = prompt("What is your name?");
+// const playerName = prompt("What is your name?");
 
 //FUNCTIONS
 const registerPlayer = async (givenName) => {
-  const nameToRegsiter = givenName ? givenName : playerName;
-  await fetch(`${process.env.API}/api/player/register?name=${nameToRegsiter}`, {
+  // const nameToRegsiter = givenName ? givenName : playerName;
+  await fetch(`${process.env.API}/api/player/register?name=${givenName}`, {
     method: "POST",
     headers: { "Authorization": process.env.API_KEY },
   })
     .then((response) => {
-      console.log(response.status);
+      // console.log(response.status);
       if (response.status === 202) {
         return `Registering user was ${response.statusText}`;
       } else {
@@ -26,6 +26,6 @@ const registerPlayer = async (givenName) => {
 };
 
 //EXECUTION
-registerPlayer();
+// registerPlayer();
 
-export default registerPlayer;
+export { registerPlayer };

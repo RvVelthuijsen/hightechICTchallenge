@@ -7,7 +7,7 @@ const forgetPlayer = async () => {
     headers: { "Authorization": process.env.API_KEY },
   })
     .then((response) => {
-      console.log(response.status);
+      // console.log(response.status);
       if (response.status === 202) {
         return `Forgetting user was ${response.statusText}`;
       } else {
