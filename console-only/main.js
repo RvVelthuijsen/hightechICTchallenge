@@ -14,12 +14,15 @@ let directionPairs = {
   Left: { counter: "Right", tag: 4 },
 };
 // above variable stores the "counter" direction (if we just went up, going down would put us where we were etc.) and the number to tag for each direction
-let move = "Up";
+let move = "";
 let inMaze = false;
 let currentMaze = {};
 let currentScoreInHand = 0;
 let currentScoreInBag = 0;
 let totalScore = 0;
+let pathToExit = [];
+let canExit = false;
+let exitFound = false;
 
 // FUNCTIONS
 
@@ -34,7 +37,9 @@ const fetchAllMazes = async () => {
       if (response.status === 200) {
         return response.json();
       } else {
-        return Promise.reject(response);
+        return Promise.reject(
+          `Error: ${response.status} - ${response.statusText}`
+        );
       }
     })
     .then((data) => {
@@ -58,7 +63,9 @@ const fetchLocation = async () => {
       if (response.status === 200) {
         return response.json();
       } else {
-        return Promise.reject(response);
+        return Promise.reject(
+          `Error: ${response.status} - ${response.statusText}`
+        );
       }
     })
     .then((data) => {
@@ -70,9 +77,10 @@ const fetchLocation = async () => {
 
 // Function to enter Maze, Example maze pre-selected
 const enterMaze = async (mazeName) => {
-  currentMaze = allMazes.find((maze) => (maze.name = mazeName));
+  currentMaze = allMazes.find((maze) => maze.name === mazeName);
   // currentMaze = allMazes[6];
   totalScore = currentMaze.potentialReward;
+  console.log(`Entering new maze ${mazeName}`);
 
   await fetch(`${process.env.API}/api/mazes/enter?mazeName=${mazeName}`, {
     method: "POST",
@@ -84,7 +92,9 @@ const enterMaze = async (mazeName) => {
       if (response.status === 200) {
         return response.json();
       } else {
-        return Promise.reject(response);
+        return Promise.reject(
+          `Error: ${response.status} - ${response.statusText}`
+        );
       }
     })
     .then((data) => {
@@ -109,10 +119,19 @@ const exitMaze = async () => {
       if (response.status === 200) {
         // getting json parse error, so handling like this
         console.log(response);
-        inMaze = false;
+        location = {};
+        currentScoreInBag = 0;
+        currentScoreInHand = 0;
+        // pathToExit = [];
+        // canExit = false;
+        // exitFound = false;
+        // inMaze = false;
+        // totalScore = 0;
         console.log("Maze exited");
       } else {
-        return Promise.reject(response);
+        return Promise.reject(
+          `Error: ${response.status} - ${response.statusText}`
+        );
       }
     })
     .catch((error) => console.error(error));
@@ -131,7 +150,9 @@ const collectScore = async () => {
       if (response.status === 200) {
         return response.json();
       } else {
-        return Promise.reject(response);
+        return Promise.reject(
+          `Error: ${response.status} - ${response.statusText}`
+        );
       }
     })
     .then((data) => {
@@ -139,6 +160,12 @@ const collectScore = async () => {
         `Nice! ${currentScoreInHand} added to bag! Total score in bag is now ${data.currentScoreInBag}`
       );
       currentScoreInHand = 0;
+      if (data.currentScoreInBag === totalScore) {
+        console.log(
+          "We've added all available score to our bag. We are now able to exit!"
+        );
+        canExit = true;
+      }
     })
     .catch((error) => console.error(error));
 };
@@ -156,7 +183,9 @@ const tagTile = async (tag) => {
       if (response.status === 200) {
         return response.json();
       } else {
-        return Promise.reject(response);
+        return Promise.reject(
+          `Error: ${response.status} - ${response.statusText}`
+        );
       }
     })
     .then((data) => {
@@ -167,15 +196,40 @@ const tagTile = async (tag) => {
 
 // Move selection funtion
 const chooseMove = async () => {
+  // Looking to see if any surrounding tiles is an exit
+  let exitHere = location.possibleMoveActions.find(
+    (option) => option.allowsExit === true
+  );
+  // If yes, flag as exit found and set the route to the exit as one step into that direction
+  if (exitHere != undefined) {
+    console.log("We found an exit, let's remember that!");
+    exitFound = true;
+    pathToExit = [exitHere.direction];
+  }
+
+  // If we can exit and know the path to exit, retrace steps
+  if (canExit && exitFound) {
+    console.log("We can leave and know the way, let's go!");
+    // setting move direction to first option in path array and removing that option
+    move = pathToExit.shift();
+    console.log(pathToExit);
+    return;
+  }
+
   // if there's only one move, go here
   if (location.possibleMoveActions.length === 1) {
     console.log("There is only one move possible");
     move = location.possibleMoveActions[0].direction;
+    if (exitFound) {
+      // if we aren't going to an exit tile, but we have found the exit (before), we're adding the counter to our move to the start of the path array, to retrace
+      pathToExit = [directionPairs[move].counter, ...pathToExit];
+      console.log(pathToExit);
+    }
     return;
   }
-  // Creating copy of array to work on
-  let moveOptions = Array.from(location.possibleMoveActions);
+
   // Creating variables to work with
+  let moveOptions = Array.from(location.possibleMoveActions);
   let taggedTile;
   let moveSelected = false;
 
@@ -191,19 +245,24 @@ const chooseMove = async () => {
   if (moveOptions.length === 1) {
     console.log("There is only one move possible");
     move = moveOptions[0].direction;
+    if (exitFound) {
+      // if we aren't going to an exit tile, but we have found the exit (before), we're adding the counter to our move to the start of the path array, to retrace
+      pathToExit = [directionPairs[move].counter, ...pathToExit];
+      console.log(pathToExit);
+    }
     return;
   }
 
   // Checking if there's a tag on current tile which corresponds to the direction we went to last time we visited and saving it in taggedTile variable
   if (location.tagOnCurrentTile != null) {
-    console.log("tag detected");
+    console.log("A tag was detected");
     taggedTile = moveOptions.find(
       (option) =>
         location.tagOnCurrentTile === directionPairs[option.direction].tag
     );
   }
 
-  // iterate over options to find best match
+  // If none of the above cases, iterate over options to find best match
   for (const i of moveOptions) {
     console.log(`Reward is ${i.rewardOnDestination}`);
     if (i.rewardOnDestination > 0) {
@@ -253,6 +312,15 @@ const chooseMove = async () => {
     move = moveOptions[randomOption].direction;
   }
 
+  if (move === exitHere?.direction) {
+    // if we are going to a tile which is an exit, path to exit becomes empty. we're there
+    pathToExit = [];
+  } else if (exitFound) {
+    // if we aren't going to an exit tile, but we have found the exit (before), we're adding the counter to our move to the start of the path array, to retrace
+    pathToExit = [directionPairs[move].counter, ...pathToExit];
+    console.log(pathToExit);
+  }
+
   // tagging tile
   console.log(
     `Going ${move}. Tagging tile for future reference. Next time we come here we should not go here again`
@@ -275,16 +343,23 @@ const movement = async () => {
       if (response.status === 200) {
         return response.json();
       } else {
-        return new Promise.reject(response);
+        return Promise.reject(
+          `Error: ${response.status} - ${response.statusText}`
+        );
       }
     })
     .then((data) => {
       location = data;
       currentScoreInHand = data.currentScoreInHand;
       currentScoreInBag = data.currentScoreInBag;
+      // if (location.canExitMazeHere){
+      //   pathToExit.unshift(directionPairs[move].counter)
+      // }
     })
     .catch((error) => console.error(error));
 };
+
+const moveToExit = () => {};
 
 // It's easier to follow in console with slight delay, adding timer of 3 sec before making next move
 const timer = (delay) => {
@@ -299,6 +374,8 @@ const wait = async () => {
 const gameLoop = async () => {
   console.log("Start");
   await fetchAllMazes();
+  allMazes = allMazes.filter((maze) => maze.name != "PacMan");
+  allMazes = [{ name: "Test", totalTiles: 5, potentialReward: 1 }, ...allMazes];
 
   // Looping over all mazes in attempt to clear all
   for (const maze of allMazes) {
@@ -313,9 +390,9 @@ const gameLoop = async () => {
       console.log(`Loop ${i}`);
       if (location.canCollectScoreHere && currentScoreInHand != 0) {
         await collectScore();
-      } else if (location.canExitMazeHere && currentScoreInBag === totalScore) {
+      } else if (location.canExitMazeHere && canExit) {
         await exitMaze();
-        console.log("Maze was completed!");
+        console.log(`Maze was completed in ${i} turns!`);
         break;
       }
       await wait();
