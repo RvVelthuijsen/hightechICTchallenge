@@ -121,11 +121,11 @@ const exitMaze = async () => {
         location = {};
         currentScoreInBag = 0;
         currentScoreInHand = 0;
-        // pathToExit = [];
-        // canExit = false;
-        // exitFound = false;
-        // inMaze = false;
-        // totalScore = 0;
+        pathToExit = [];
+        canExit = false;
+        exitFound = false;
+        inMaze = false;
+        totalScore = 0;
         console.log("Maze exited");
       } else {
         return Promise.reject(
