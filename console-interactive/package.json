@@ -1,0 +1,15 @@
+{
+  "name": "hti_challenge_interactive_console",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "inquirer": "^9.2.8"
+  },
+  "scripts": {
+    "forget": "node -r dotenv/config methods/forgetPlayer.js",
+    "register": "node -r dotenv/config methods/registerPlayer.js",
+    "player-info": "node -r dotenv/config methods/getPlayerInfo.js",
+    "start": "node -r dotenv/config methods/forgetPlayer.js && node -r dotenv/config methods/registerPlayer.js && node main.js",
+    "play": "node -r dotenv/config methods/forgetPlayer.js && node -r dotenv/config main.js"
+  }
+}
