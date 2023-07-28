@@ -75,12 +75,11 @@ const fetchLocation = async () => {
     .catch((error) => console.error(error));
 };
 
-// Function to enter Maze, Example maze pre-selected
+// Function to enter Maze
 const enterMaze = async (mazeName) => {
   currentMaze = allMazes.find((maze) => maze.name === mazeName);
-  // currentMaze = allMazes[6];
   totalScore = currentMaze.potentialReward;
-  console.log(`Entering new maze ${mazeName}`);
+  console.log(`Entering new maze: ${mazeName}`);
 
   await fetch(`${process.env.API}/api/mazes/enter?mazeName=${mazeName}`, {
     method: "POST",
@@ -358,8 +357,6 @@ const movement = async () => {
     })
     .catch((error) => console.error(error));
 };
-
-const moveToExit = () => {};
 
 // It's easier to follow in console with slight delay, adding timer of 3 sec before making next move
 const timer = (delay) => {
