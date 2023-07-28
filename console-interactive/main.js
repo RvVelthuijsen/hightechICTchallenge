@@ -1,8 +1,5 @@
 // IMPORTS
-import dotenv from "dotenv";
-dotenv.config;
 import inquirer from "inquirer";
-import readline from "readline";
 import { registerPlayer } from "./methods/registerPlayer.js";
 
 //VARIABLES
@@ -12,17 +9,10 @@ let playerName;
 let selectedMaze = {};
 let location = {};
 let move = "";
+let currentScoreInHand = 0;
+let currentScoreInBag = 0;
 
 // FUNCTIONS
-
-const rlCreateInterface = () => {
-  return readline.createInterface({
-    // reset the readline Interface
-    input: process.stdin,
-    output: process.stdout,
-  });
-};
-
 const fetchAllMazes = async () => {
   //   console.log("Fetching mazes");
   let mazeNameList = [];
@@ -77,6 +67,35 @@ const enterSelectedMaze = async () => {
     .catch((error) => console.error(error));
 };
 
+const exitMaze = async () => {
+  console.log("Exiting maze");
+  await fetch(`${process.env.API}/api/maze/exit`, {
+    method: "POST",
+    headers: {
+      "Authorization": process.env.API_KEY,
+    },
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        console.log(response);
+        location = {};
+        currentScoreInBag = 0;
+        currentScoreInHand = 0;
+        //   pathToExit = [];
+        //   canExit = false;
+        //   exitFound = false;
+        //   inMaze = false;
+        //   totalScore = 0;
+        console.log("Maze exited");
+      } else {
+        return Promise.reject(
+          `Error: ${response.status} - ${response.statusText}`
+        );
+      }
+    })
+    .catch((error) => console.error(error));
+};
+
 const intitialise = async () => {
   console.log("Initialising");
   const choices = await inquirer
@@ -121,13 +140,16 @@ const intitialise = async () => {
   return choices;
 };
 const chooseMove = async () => {
+  const movementOptions = location.possibleMoveActions.map(
+    (option) => option.direction
+  );
   const choices = await inquirer
     .prompt([
       {
         type: "list",
         name: "move",
         message: "Which direction would you like to go in?",
-        choices: mazeNameList,
+        choices: movementOptions,
       },
     ])
     .catch((error) => {
@@ -165,11 +187,17 @@ const movement = async () => {
       location = data;
       currentScoreInHand = data.currentScoreInHand;
       currentScoreInBag = data.currentScoreInBag;
-      // if (location.canExitMazeHere){
-      //   pathToExit.unshift(directionPairs[move].counter)
-      // }
+      console.log(
+        `Went ${move}. This is your current status: ${currentScoreInHand} in hand and ${currentScoreInBag} in bag.`
+      );
     })
     .catch((error) => console.error(error));
+
+  if (location.canExitMazeHere) {
+    exitMaze();
+  } else {
+    movement();
+  }
 };
 
 const gameLoop = async () => {
@@ -178,6 +206,8 @@ const gameLoop = async () => {
   await intitialise();
   await registerPlayer(playerName);
   await enterSelectedMaze(selectedMaze.name);
+  console.log("You find yourself in a ");
+  await movement();
 
   // let i = 1;
   // do {
