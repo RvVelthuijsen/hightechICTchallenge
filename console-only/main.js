@@ -159,6 +159,7 @@ const collectScore = async () => {
         `Nice! ${currentScoreInHand} added to bag! Total score in bag is now ${data.currentScoreInBag}`
       );
       currentScoreInHand = 0;
+      currentScoreInBag = data.currentScoreInBag;
       if (data.currentScoreInBag === totalScore) {
         console.log(
           "We've added all available score to our bag. We are now able to exit!"
