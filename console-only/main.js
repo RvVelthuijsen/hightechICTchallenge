@@ -371,8 +371,6 @@ const wait = async () => {
 const gameLoop = async () => {
   console.log("Start");
   await fetchAllMazes();
-  allMazes = allMazes.filter((maze) => maze.name != "PacMan");
-  allMazes = [{ name: "Test", totalTiles: 5, potentialReward: 1 }, ...allMazes];
 
   // Looping over all mazes in attempt to clear all
   for (const maze of allMazes) {
