@@ -1,0 +1,93 @@
+.screen {
+  border: 3px solid black;
+  border-radius: 4rem;
+  padding: 20px;
+  width: 500px;
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 20px;
+}
+
+.tile-grid {
+  margin: 20px;
+  display: grid;
+  column-gap: 20px;
+  row-gap: 20px;
+  grid-template-columns: 82px 82px 82px;
+  grid-template-rows: 82px 82px 82px;
+  grid-template-areas:
+    ". up ."
+    "left mid right"
+    ". down .";
+}
+
+.tile {
+  width: 80px;
+  height: 80px;
+  border-width: 3px;
+  border-style: solid;
+  border-color: black;
+  grid-area: mid;
+}
+
+.tile-option-up {
+  width: 80px;
+  height: 80px;
+  border-width: 3px;
+  border-style: solid;
+  border-image: linear-gradient(to top, black, rgba(0, 0, 0, 0)) 1;
+  grid-area: up;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tile-option-left {
+  width: 80px;
+  height: 80px;
+  border-width: 3px;
+  border-style: solid;
+  border-image: linear-gradient(to left, black, rgba(0, 0, 0, 0)) 1;
+  grid-area: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tile-option-right {
+  width: 80px;
+  height: 80px;
+  border-width: 3px;
+  border-style: solid;
+  border-image: linear-gradient(to right, black, rgba(0, 0, 0, 0)) 1;
+  grid-area: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tile-option-down {
+  width: 80px;
+  height: 80px;
+  border-width: 3px;
+  border-style: solid;
+  border-image: linear-gradient(to bottom, black, rgba(0, 0, 0, 0)) 1;
+  grid-area: down;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.placeholder {
+  height: 80%;
+}
+
+#typewriter {
+  height: 20%;
+}
+.bottom-bar {
+  width: 100%;
+}
