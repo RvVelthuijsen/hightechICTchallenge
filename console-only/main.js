@@ -235,7 +235,7 @@ const chooseMove = async () => {
 
   // If there's more than one move, I'm removing the option which goes back to where we just came from
   let moveWhichGoesBack = moveOptions.find(
-    (option) => option.direction === directionPairs[move].counter
+    (option) => option.direction === directionPairs[move]?.counter
   );
   if (moveWhichGoesBack != undefined) {
     moveOptions = moveOptions.filter((option) => option != moveWhichGoesBack);
