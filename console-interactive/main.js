@@ -17,7 +17,6 @@ let inMaze = false;
 
 // FUNCTIONS
 const fetchAllMazes = async () => {
-  //   console.log("Fetching mazes");
   let mazeNameList = [];
   await fetch(`${process.env.API}/api/mazes/all`, {
     method: "GET",
@@ -33,7 +32,6 @@ const fetchAllMazes = async () => {
       }
     })
     .then((data) => {
-      //   console.log("Fetching complete");
       allMazeData = data;
       mazeNameList = data.map((maze) => {
         return maze.name;
@@ -64,7 +62,6 @@ const enterSelectedMaze = async () => {
       }
     })
     .then((data) => {
-      //   console.log(data);
       location = data;
       inMaze = true;
       console.log(`You have entered the ${selectedMaze.name} maze. Good luck!`);
@@ -175,19 +172,6 @@ const intitialise = async () => {
 };
 const chooseMove = async () => {
   const movementOptions = location.possibleMoveActions.map((option) => {
-    // switch (true) {
-    //   case option.allowsExit:
-    //     console.log(`You can go ${option.direction} Here you can exit if you've collected all available score.`);
-    //   case option.allowsScoreCollection:
-    //     console.log(`${option.direction} allows you to collect your score.`);
-    //   case option.rewardOnDestination > 0:
-    //     console.log(
-    //       `${option.direction} has a reward: ${option.rewardOnDestination}.`
-    //     );
-    //   default:
-    //     console.log(`${option.direction} has nothing special.`);
-    // }
-
     console.log(
       `You can go ${option.direction}. Here you ${
         option.allowsExit ? "can" : "cannot"
@@ -294,19 +278,6 @@ const gameLoop = async () => {
   await intitialise();
   await registerPlayer(playerName);
   await enterSelectedMaze(selectedMaze.name);
-  const loader = [
-    "/ Installing",
-    "| Installing",
-    "\\ Installing",
-    "- Installing",
-  ];
-  let i = 4;
-  const ui = new inquirer.ui.BottomBar({ bottomBar: loader[i % 4] });
-  const interval = setInterval(() => {
-    ui.updateBottomBar(loader[i++ % 4]);
-  }, 300);
-  clearInterval(interval);
-
   console.log(
     "You find yourself in a new maze. Take a look around, what are your options?"
   );
