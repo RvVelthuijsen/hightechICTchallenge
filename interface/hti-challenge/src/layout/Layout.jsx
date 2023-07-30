@@ -7,11 +7,11 @@ function Layout() {
     <>
       <header className={"header"}>
         <h1>A-maze-ing Race</h1>
-        <ul>
-          <li>
+        <ul className="menu-options">
+          <li className="menu-item">
             <a href="/">Maze</a>
           </li>
-          <li>
+          <li className="menu-item">
             <a href="/process">Process</a>
           </li>
         </ul>

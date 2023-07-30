@@ -58,7 +58,7 @@ function Maze() {
       setTypeStrings([
         `Nice, you picked up ${
           newLocation.currentScoreInHand - location.currentScoreInHand
-        } points!`,
+        } point(s)!`,
         "Where would you like to go next?",
       ]);
     } else {
@@ -70,7 +70,7 @@ function Maze() {
   const scoreCollection = async () => {
     let newLocation = await collectScore();
     setTypeStrings([
-      `Nice, ${location.currentScoreInHand} points added to bag!`,
+      `Nice, ${location.currentScoreInHand} point(s) added to bag!`,
       "Where would you like to go next?",
     ]);
     updateLocation(newLocation);

@@ -10,13 +10,13 @@
   background-color: white;
 }
 
-ul {
+.menu-options {
   list-style: none;
   display: flex;
   flex-direction: row;
 }
 
-li {
+.menu-item {
   padding: 1rem;
 }
 

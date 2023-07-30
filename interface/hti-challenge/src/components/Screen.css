@@ -11,7 +11,28 @@
   row-gap: 20px;
 }
 
+.maze-section {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.img-container {
+  position: relative;
+}
+
+.img-container > img {
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  text-align: center;
+}
+
 .tile-grid {
+  z-index: -1;
   display: grid;
   column-gap: 20px;
   row-gap: 20px;
@@ -85,10 +106,12 @@
 
 .placeholder {
   height: 80%;
+  background-color: white;
 }
 
 #typewriter {
   height: 20%;
+  background-color: white;
 }
 .bottom-bar {
   width: 100%;
