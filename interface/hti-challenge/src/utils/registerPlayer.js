@@ -14,7 +14,7 @@ const registerPlayer = async (givenName) => {
     .then((response) => {
       console.log(response);
       if (response.status === 202) {
-        return `Registering user was ${response.statusText}`;
+        return response.ok;
       } else {
         return Promise.reject(
           `Error: ${response.status} - ${response.statusText}`

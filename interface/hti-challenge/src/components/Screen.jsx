@@ -1,41 +1,40 @@
 import Typewriter from "typewriter-effect";
+import player from "../assets/player.png";
 import "./Screen.css";
 
 function Screen({ moves, status, typeStrings, location }) {
-  //   const type = document.getElementById("typewriter");
-  //   const instance = new Typewriter(type, {
-  //     autoStart: true,
-  //     loop: true,
-  //     delay: 80,
-  //   });
-
-  //   instance
-  //     .pauseFor(2500)
-  //     .typeString("A simple yet powerful native javascript")
-  //     .pauseFor(300)
-  //     .deleteChars(10)
-  //     .typeString("<strong>JS</strong> plugin for a cool typewriter effect and ")
-  //     .typeString(
-  //       '<strong>only <span style="color: #27ae60;">5kb</span> Gzipped!</strong>'
-  //     )
-  //     .pauseFor(1000)
-  //     .start();
-
   return (
     <div className={"screen"}>
       {status === "inMaze" ? (
-        <div className={"tile-grid"}>
-          <div className={"tile"}></div>
-          {moves.map((move) => {
-            return (
-              <div
-                key={move.direction}
-                className={`tile-option-${move.direction.toLowerCase()}`}
-              >
-                <p>{move.rewardOnDestination}</p>
-              </div>
-            );
-          })}
+        <div style={{ position: "relative" }}>
+          <img
+            src={player}
+            width={"70px"}
+            height={"70px"}
+            style={{
+              position: "absolute",
+              margin: "auto",
+
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              textAlign: "center",
+            }}
+          />
+          <div className={"tile-grid"}>
+            <div className={"tile"}></div>
+            {moves.map((move) => {
+              return (
+                <div
+                  key={move.direction}
+                  className={`tile-option-${move.direction.toLowerCase()}`}
+                >
+                  <p>{move.rewardOnDestination}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       ) : (
         <div className="placeholder"></div>
