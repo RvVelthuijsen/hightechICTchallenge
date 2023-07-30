@@ -294,6 +294,19 @@ const gameLoop = async () => {
   await intitialise();
   await registerPlayer(playerName);
   await enterSelectedMaze(selectedMaze.name);
+  const loader = [
+    "/ Installing",
+    "| Installing",
+    "\\ Installing",
+    "- Installing",
+  ];
+  let i = 4;
+  const ui = new inquirer.ui.BottomBar({ bottomBar: loader[i % 4] });
+  const interval = setInterval(() => {
+    ui.updateBottomBar(loader[i++ % 4]);
+  }, 300);
+  clearInterval(interval);
+
   console.log(
     "You find yourself in a new maze. Take a look around, what are your options?"
   );

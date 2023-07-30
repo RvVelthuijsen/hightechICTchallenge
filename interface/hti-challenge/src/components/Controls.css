@@ -1,0 +1,56 @@
+.controls {
+  border: 3px solid black;
+  border-radius: 4rem;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 500px;
+  height: 35%;
+}
+
+.movement-options {
+  margin: 14px;
+  place-items: center;
+  display: grid;
+  column-gap: 20px;
+  row-gap: 20px;
+  grid-template-columns: 50px 50px 50px;
+  grid-template-rows: 50px 50px 50px;
+  grid-template-areas:
+    ". up ."
+    "left . right"
+    ". down .";
+}
+
+.movement-up {
+  grid-area: up;
+}
+
+.movement-left {
+  grid-area: left;
+}
+
+.movement-right {
+  grid-area: right;
+}
+
+.movement-down {
+  grid-area: down;
+}
+
+.exit {
+  width: 60%;
+}
+
+.collect {
+  width: 60%;
+}
+
+input {
+  width: 100%;
+  border: 3px solid black;
+  border-radius: 4rem;
+  margin-bottom: 5px;
+}
